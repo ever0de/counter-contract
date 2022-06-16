@@ -1,5 +1,9 @@
 use cosmwasm_std::{Addr, Coin, Empty, Uint128};
-use counter_contract::{contract, helpers::CwTemplateContract, msg::InstantiateMsg};
+use counter_contract::{
+    contract,
+    helpers::CwTemplateContract,
+    msg::{ExecuteMsg, InstantiateMsg},
+};
 use cw_multi_test::{App, AppBuilder, Contract, ContractWrapper, Executor};
 
 pub fn contract_template() -> Box<dyn Contract<Empty>> {
@@ -48,16 +52,11 @@ fn proper_instantiate() -> (App, CwTemplateContract) {
     (app, cw_template_contract)
 }
 
-mod count {
-    use super::*;
-    use counter_contract::msg::ExecuteMsg;
+#[test]
+fn count() {
+    let (mut app, cw_template_contract) = proper_instantiate();
 
-    #[test]
-    fn count() {
-        let (mut app, cw_template_contract) = proper_instantiate();
-
-        let msg = ExecuteMsg::Increment {};
-        let cosmos_msg = cw_template_contract.call(msg).unwrap();
-        app.execute(Addr::unchecked(USER), cosmos_msg).unwrap();
-    }
+    let msg = ExecuteMsg::Increment {};
+    let cosmos_msg = cw_template_contract.call(msg).unwrap();
+    app.execute(Addr::unchecked(USER), cosmos_msg).unwrap();
 }
