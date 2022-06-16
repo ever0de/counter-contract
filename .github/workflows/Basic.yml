@@ -18,11 +18,11 @@ jobs:
           target: wasm32-unknown-unknown
           override: true
 
-      - name: Run unit tests
+      - name: Run tests
         uses: actions-rs/cargo@v1
         with:
-          command: unit-test
-          args: --locked
+          command: test
+          args: --all-targets --workspace
         env:
           RUST_BACKTRACE: 1
 
