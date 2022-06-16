@@ -3,10 +3,10 @@ use cosmwasm_std::entry_point;
 use cosmwasm_std::{to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult};
 use cw2::set_contract_version;
 
-use crate::execute;
-use crate::msg::{CountResponse, ExecuteMsg, InstantiateMsg, QueryMsg};
+use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
 use crate::result::Result;
 use crate::state::{State, STATE};
+use crate::{execute, query};
 
 // version info for migration info
 const CONTRACT_NAME: &str = "crates.io:counter-contract";
@@ -43,20 +43,15 @@ pub fn execute(deps: DepsMut, _env: Env, info: MessageInfo, msg: ExecuteMsg) -> 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
     let response = match msg {
-        QueryMsg::GetCount {} => query_count(deps)?,
+        QueryMsg::GetCount {} => query::count(deps)?,
     };
 
     to_binary(&response)
 }
 
-fn query_count(deps: Deps) -> StdResult<CountResponse> {
-    let state = STATE.load(deps.storage)?;
-
-    Ok(CountResponse { count: state.count })
-}
-
 #[cfg(test)]
 mod tests {
+    use crate::msg::CountResponse;
     use crate::ContractError;
 
     use super::*;
