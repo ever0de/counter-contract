@@ -61,18 +61,22 @@ pub fn try_reset(deps: DepsMut, info: MessageInfo, count: i32) -> Result<Respons
         state.count = count;
         Ok(state)
     })?;
+
     Ok(Response::new().add_attribute("method", "reset"))
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
-    match msg {
-        QueryMsg::GetCount {} => to_binary(&query_count(deps)?),
-    }
+    let response = match msg {
+        QueryMsg::GetCount {} => query_count(deps)?,
+    };
+
+    to_binary(&response)
 }
 
 fn query_count(deps: Deps) -> StdResult<CountResponse> {
     let state = STATE.load(deps.storage)?;
+
     Ok(CountResponse { count: state.count })
 }
 
